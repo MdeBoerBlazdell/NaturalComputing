@@ -49,6 +49,9 @@ def question1(bit_string, generations=1500, mu=0.01):
     current_best_fitness = 0
     for i in range(0,generations):
         fitness = calculate_fitness(bit_string)
+        if fitness == len(bit_string):
+            best_fitness[i:] = len(bit_string)
+            return best_fitness
         if fitness > current_best_fitness: # conditionally update best_fitness if we find a new optimum
             current_best_fitness = fitness
             best_fitness[i] = fitness
@@ -71,6 +74,9 @@ def question2(bit_string, generations=1500, mu=0.01):
     current_best_fitness = 0
     for i in range(0,generations):
         fitness = calculate_fitness(bit_string)
+        if fitness == len(bit_string):
+            best_fitness[i:] = len(bit_string)
+            return best_fitness
         if fitness > current_best_fitness:
             current_best_fitness = fitness
             best_fitness[i] = fitness
