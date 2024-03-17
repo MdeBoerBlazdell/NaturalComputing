@@ -83,6 +83,8 @@ def tournament_selection(
     population = list(map(lambda x: "".join(x), population))
     
     for generation in range(0,gmax):
+        if generation % 10 == 0:
+            
         for p in population:
             if fitness(p) == len(target): # we have found a solution
                 return p, generation
