@@ -70,3 +70,27 @@ def valid_sudoku(sudoku):
             if len(valid_nrs) < 9:
                 return False
     return True 
+
+def is_valid_value(index):
+    """
+    Check if a square has a value, and this does not conflict with any of its neighbours
+    """
+    neighbours = constraints[index]
+    if sudoku[index] == 0:
+        return False
+    for n in neighbours:
+        if sudoku[index] == sudoku[n]:
+            return False
+    return True
+
+def fitness():
+    score = 0
+    for key in constraints.keys():
+        if is_valid_value(key):
+            score += 1
+    return score
+
+parse_sudoku("sudoku1.txt")
+initialise_neighbours(sudoku)
+print(sudoku[0,5])
+print(fitness())
