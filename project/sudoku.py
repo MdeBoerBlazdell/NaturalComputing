@@ -1,15 +1,13 @@
 import numpy as np
 
-sudoku = np.zeros((9,9), dtype=int)
-constraints = {} # Dictionary that maps indices of a square to a set of indices by which it is constraint
 
 def pretty_print(sudoku):
     output = "╔═══════╦═══════╦═══════╗\n"
-    for i in range(0,9):
+    for i in range(0, 9):
         if i == 3 or i == 6:
             output += "╠═══════╬═══════╬═══════╣\n"
         output += "║ "
-        for j in range(0,9):
+        for j in range(0, 9):
             if j == 3 or j == 6:
                 output += "║ "
             output += str(sudoku[i][j]) + " "
@@ -17,61 +15,73 @@ def pretty_print(sudoku):
     output += "╚═══════╩═══════╩═══════╝\n"
     print(output)
 
+
 def parse_sudoku(filepath: str):
+    sudoku = np.zeros((9, 9), dtype=int)
     with open(filepath) as f:
         lines = f.readlines()
         for i, line in enumerate(lines):
             for j, val in enumerate(line.strip()):
                 sudoku[i][j] = val
+    return sudoku
 
-def initialise_neighbours(board):
-    for i,j in np.ndindex(board.shape):
+
+def initialise_constraints(board):
+    constraints = (
+        {}
+    )  # Dictionary that maps indices of a square to a set of indices by which it is constraint
+    for i, j in np.ndindex(board.shape):
         neighbours = set()
-        for k in range(0,9): 
+        for k in range(0, 9):
             if k == j:
                 continue
-            neighbours.add((i,k)) # Add all vertical neighbours from the column
-        for k in range(0,9):
+            neighbours.add((i, k))  # Add all vertical neighbours from the column
+        for k in range(0, 9):
             if k == i:
                 continue
-            neighbours.add((k,j)) # Add all horizontal neighbours from the row
-        for row in range(i //3 * 3, i//3*3 + 3): # Identify the top left corner of a 3x3 box 
-            for col in range(j //3 * 3, j//3 * 3 + 3):
+            neighbours.add((k, j))  # Add all horizontal neighbours from the row
+        for row in range(
+            i // 3 * 3, i // 3 * 3 + 3
+        ):  # Identify the top left corner of a 3x3 box
+            for col in range(j // 3 * 3, j // 3 * 3 + 3):
                 if row == i and col == j:
                     continue
-                neighbours.add((row,col))
-        constraints[(i,j)] = neighbours
+                neighbours.add((row, col))
+        constraints[(i, j)] = neighbours
+    return constraints
+
 
 def valid_sudoku(sudoku):
     # first we check whether each row is valid
-    for i in range(0,9):
+    for i in range(0, 9):
         valid_nrs = set()
-        for j in range(0,9):
-            if sudoku[i,j] != 0:
-                valid_nrs.add(sudoku[i,j])
+        for j in range(0, 9):
+            if sudoku[i, j] != 0:
+                valid_nrs.add(sudoku[i, j])
         if len(valid_nrs) < 9:
             return False
     # Then we check each column
-    for j in range(0,9):
+    for j in range(0, 9):
         valid_nrs = set()
-        for i in range(0,9):
-             if sudoku[i,j] != 0:
-                valid_nrs.add(sudoku[i,j])
+        for i in range(0, 9):
+            if sudoku[i, j] != 0:
+                valid_nrs.add(sudoku[i, j])
         if len(valid_nrs) < 9:
             return False
     # And finally we check each 3x3 grid
-    for i in range(0,9,3):
-        for j in range(0,9,3):
+    for i in range(0, 9, 3):
+        for j in range(0, 9, 3):
             valid_nrs = set()
-            for row in range(i,i+3):
-                for col in range(j,j+3):
-                    if sudoku[i,j] != 0:
-                        valid_nrs.add(sudoku[row,col])
+            for row in range(i, i + 3):
+                for col in range(j, j + 3):
+                    if sudoku[i, j] != 0:
+                        valid_nrs.add(sudoku[row, col])
             if len(valid_nrs) < 9:
                 return False
-    return True 
+    return True
 
-def is_valid_value(index):
+
+def is_valid_value(sudoku, constraints, index):
     """
     Check if a square has a value, and this does not conflict with any of its neighbours
     """
@@ -83,14 +93,26 @@ def is_valid_value(index):
             return False
     return True
 
-def fitness():
+
+def fitness(constraints):
     score = 0
     for key in constraints.keys():
         if is_valid_value(key):
             score += 1
     return score
 
-parse_sudoku("sudoku1.txt")
-initialise_neighbours(sudoku)
-print(sudoku[0,5])
-print(fitness())
+
+def open_fields(sudoku):
+    open_fields = []
+    for i, j in np.ndindex(sudoku.shape):
+        if sudoku[i, j] == 0:
+            open_fields.append((i, j))
+    return open_fields
+
+
+def available_values(sudoku):
+    values = []
+    for i, j in np.ndindex(sudoku.shape):
+        if sudoku[i, j] != 0:
+            values.append(sudoku[i,j])
+    return sorted(values)
