@@ -149,7 +149,6 @@ def available_values(sudoku):
     9 times 1, 9 times 2, 9 times 3 etc. For each value that we encounter
     in the initial sudoku configuration, we remove that value from the list
     """
-    # values = np.repeat([1,2,3,4,5,6,7,8,9],9)
     values = [1, 2, 3, 4, 5, 6, 7, 8, 9] * 9
     for i, j in np.ndindex(sudoku.shape):
         if sudoku[i, j] != 0:
