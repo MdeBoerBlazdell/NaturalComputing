@@ -41,7 +41,7 @@ def initialise_constraints(board):
     """
     constraints = (
         {}
-    )  # Dictionary that maps indices of a square to a set of indices by which it is constraint
+    )  # Dictionary that maps indices of a square to a set of indices by which it is constrained
     for i, j in np.ndindex(board.shape):
         neighbours = set()
         for k in range(0, 9):
@@ -115,7 +115,7 @@ def is_valid_value(sudoku, constraints, index):
     return True
 
 
-def fitness(constraints):
+def fitness(sudoku):
     """
     For each field in a sudoku, we check if the value in it is valid.
     For a value to be valid, see the explanation at is_valid_value.
@@ -123,8 +123,9 @@ def fitness(constraints):
     in the interval [0,81], where 81 indicates that a solution is found for the sudoku
     """
     score = 0
+    constraints = initialise_constraints(sudoku)
     for key in constraints.keys():
-        if is_valid_value(key):
+        if is_valid_value(sudoku, constraints, key):
             score += 1
     return score
 
