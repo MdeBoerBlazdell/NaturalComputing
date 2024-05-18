@@ -3,7 +3,7 @@ import numpy as np
 import random
 
 # Hyperparameters of the evolutionary algorithm
-MUTATION_RATE = 0.01
+MUTATION_RATE = 1 # Test value while crossover is not implemented, TODO change to 0.01 later
 CROSSOVER_RATE = 1
 NUM_CHILDREN = 10
 MAX_GENERATIONS = 1000
@@ -21,7 +21,7 @@ def solve_sudoku(sudoku):
         for c in children:
             # Check whether any child is the solved sudoku
             if(valid_sudoku(c)):
-                return c, gens
+                return (True, c, gens)
             # Compute and store fitness of children
             fitness_scores.append((c,fitness(c)))
 
@@ -36,6 +36,7 @@ def solve_sudoku(sudoku):
         
         parents = new_parents
         gens += 1
+    return (False, sudoku, gens)
 
 
 def generate_children(sudoku,parents):
@@ -58,11 +59,11 @@ def generate_children(sudoku,parents):
                         child[i][j] = val
                         vals.remove(val)
 
-            if random() <= CROSSOVER_RATE:        
+            if random.random() <= CROSSOVER_RATE:        
                 # TODO: Implement crossover between parents
                 continue
 
-            if random()<= MUTATION_RATE:
+            if random.random()<= MUTATION_RATE:
                 # Mutation: swap two digits in the sudoku puzzle
                 i1,j1 = random.choice(positions)
                 i2,j2 = random.choice(positions)
