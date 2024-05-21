@@ -2,7 +2,7 @@ from sudoku import parse_sudoku, pretty_print, initialise_constraints,valid_sudo
 from sudoku_evolution import solve_sudoku
 import numpy as np
 
-sudoku = parse_sudoku("project/sudoku_3v.txt") # This should not be modified, but you should make deep copies when making children
+sudoku = parse_sudoku("project/sudoku1_15v.txt")
 # constraints = initialise_constraints(sudoku) # You should not need to modify this
 found, solution, gens = solve_sudoku(sudoku)
 if(found):
