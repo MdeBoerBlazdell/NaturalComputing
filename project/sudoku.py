@@ -115,7 +115,7 @@ def is_valid_value(sudoku, constraints, index):
     return True
 
 
-def fitness(sudoku):
+def fitness_from_sudoku(sudoku):
     """
     For each field in a sudoku, we check if the value in it is valid.
     For a value to be valid, see the explanation at is_valid_value.
@@ -129,8 +129,13 @@ def fitness(sudoku):
             score += 1
     return score
 
+def fitness_from_values(sudoku, open_fields, values):
+    new_soduku = sudoku.copy()
+    for index, val in zip(open_fields, values):
+        new_soduku[index] = val
+    return fitness_from_sudoku(new_soduku)
 
-def open_fields(sudoku):
+def determine_open_fields(sudoku):
     """
     Identifies all fields that do not have a value (i.e. value = 0) in
     the original sudoku configuration. These fields are stored as a tuple
@@ -155,3 +160,15 @@ def available_values(sudoku):
         if sudoku[i, j] != 0:
             values.remove(sudoku[i, j])
     return sorted(values)
+
+def is_solution(sudoku, open_fields, values):
+    s = sudoku.copy()
+    for index, val in zip(open_fields, values):
+        s[index] = val
+    return valid_sudoku(s)
+
+def fill_in_sudoku(sudoku, open_fields, values):
+    s = sudoku.copy()
+    for index, val in zip(open_fields, values):
+        s[index] = val
+    return s
