@@ -10,4 +10,6 @@ sudoku = parse_sudoku("sudoku1_10v.txt")
 #     pretty_print(solution)
 # else:
 #     print(f"No solution found after {gens} generations")
-evolve_solution(sudoku)
+iterations, solution = evolve_solution(sudoku)
+print(f"Solved after {iterations} generations")
+pretty_print(solution)

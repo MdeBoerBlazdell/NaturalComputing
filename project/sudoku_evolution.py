@@ -5,16 +5,14 @@ from sudoku import (
     determine_open_fields,
     available_values,
     is_solution,
-    fill_in_sudoku
+    fill_in_sudoku,
 )
 import numpy as np
 import random
-from functools import cmp_to_key
 
 # Hyperparameters of the evolutionary algorithm
-MUTATION_RATE = 1  # Test value while crossover is not implemented, TODO change to suitable value later
-CROSSOVER_RATE = 1
-NUM_CHILDREN = 10
+MUTATION_RATE = 0.001  # Test value while crossover is not implemented, TODO change to suitable value later
+NUM_CHILDREN = 100
 MAX_GENERATIONS = 10000
 
 
@@ -96,7 +94,6 @@ def evolve_solution(
     sudoku,
     MAX_GENERATIONS=MAX_GENERATIONS,
     MUTATION_RATE=MUTATION_RATE,
-    CROSSOVER_RATE=CROSSOVER_RATE,
     NR_CHILDREN=NUM_CHILDREN,
 ):
     values = available_values(sudoku)
@@ -104,33 +101,40 @@ def evolve_solution(
     # The solution is a permutation of the values list, where each element in values is filled in in the open_fields with the same index
 
     # Start with an initial set of parents, derived from the original sudoku configuration
-    parents = []
-    for _ in range(0,NR_CHILDREN):
+    previous_generation = []
+    for _ in range(0, NR_CHILDREN):
         vals = random.sample(values, len(values))
-        parents.append(vals)
-    # Sort children based on fitness value
-    sorted(parents, key=cmp_to_key(lambda ls1, ls2: fitness_from_values(sudoku, open_fields, ls1) - fitness_from_values(sudoku, open_fields, ls2)))
-    
-    for generation in range(0,MAX_GENERATIONS):
-        cum_fitness = np.sum([fitness_from_values(sudoku, open_fields, c) for c in parents])
-        weights = [fitness_from_values(sudoku, open_fields, c) / cum_fitness for c in parents]
-        print(f"size population: {len(parents)}, size weights: {len(weights)}")
+        previous_generation.append(vals)
+
+    for generation in range(0, MAX_GENERATIONS):
+        print(generation)
+        cum_fitness = np.sum(
+            [fitness_from_values(sudoku, open_fields, c) for c in previous_generation]
+        )
+        weights = [
+            fitness_from_values(sudoku, open_fields, c) / cum_fitness for c in previous_generation
+        ]
 
         new_children = []
-        for _ in range(0,NR_CHILDREN//2):
+        for _ in range(0, NR_CHILDREN // 2):
             # for each child, we generate two parents from the previous generation
-            parents = random.choices(parents, weights=weights,k=2)
+
+            parents = random.choices(previous_generation, weights=weights, k=2)
+
             child1, child2 = crossover(parents)
-            if random.random() < CROSSOVER_RATE:
+            # For both children, we mutate with a probability of MUTATION_RATE
+            if random.random() < MUTATION_RATE:
                 child1 = mutate(child1)
-            if random.random() < CROSSOVER_RATE:
+            if random.random() < MUTATION_RATE:
                 child2 = mutate(child2)
             new_children.append(child1)
             new_children.append(child2)
-        parents = new_children
         for c in new_children:
             if is_solution(sudoku, open_fields, c):
                 return generation, fill_in_sudoku(sudoku, open_fields, c)
+        previous_generation = new_children
+    print(f"No solution found after {MAX_GENERATIONS} generations")
+    return
 
 def crossover(parents):
     """
@@ -140,7 +144,10 @@ def crossover(parents):
     parent1, parent2 = parents
     partition_size = len(parent1) // 3
 
-    child1, child2 = parent1[partition_size:-partition_size], parent2[partition_size:-partition_size]
+    child1, child2 = (
+        parent1[partition_size:-partition_size],
+        parent2[partition_size:-partition_size],
+    )
 
     parent1 = [x for x in parent1 if x not in child2]
     parent2 = [x for x in parent2 if x not in child1]
@@ -150,15 +157,13 @@ def crossover(parents):
 
     return child1, child2
 
+
 def mutate(values):
     """
     Randomly swap the value at two indices in the values list
     """
-    indices = random.choices(range(len(values)),k=2)
+    indices = random.choices(range(len(values)), k=2)
     temp = values[indices[0]]
     values[indices[0]] = values[indices[1]]
     values[indices[1]] = temp
     return values
-
-
-
