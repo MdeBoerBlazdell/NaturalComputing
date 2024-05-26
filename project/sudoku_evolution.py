@@ -11,11 +11,11 @@ import numpy as np
 import random
 
 # Hyperparameters of the evolutionary algorithm
-MUTATION_RATE = 0.001  # Test value while crossover is not implemented, TODO change to suitable value later
-NUM_CHILDREN = 100
+MUTATION_RATE = 0.01  # Test value while crossover is not implemented, TODO change to suitable value later
+NUM_CHILDREN = 10
 MAX_GENERATIONS = 10000
 
-
+'''
 def solve_sudoku(sudoku):
     solved = False
     gens = 0
@@ -52,7 +52,6 @@ def solve_sudoku(sudoku):
         gens += 1
     return (False, sudoku, gens)
 
-
 def generate_children(sudoku, parents):
     children = []
 
@@ -88,7 +87,7 @@ def generate_children(sudoku, parents):
         children.append(child)
 
     return children
-
+'''
 
 def evolve_solution(
     sudoku,

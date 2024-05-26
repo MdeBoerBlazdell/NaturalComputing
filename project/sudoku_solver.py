@@ -1,8 +1,8 @@
 from sudoku import parse_sudoku, pretty_print
-from sudoku_evolution import solve_sudoku, evolve_solution, crossover
+from sudoku_evolution import evolve_solution, crossover
 import numpy as np
 
-sudoku = parse_sudoku("sudoku1_10v.txt")
+sudoku = parse_sudoku("./project/sudoku1_5v.txt")
 # constraints = initialise_constraints(sudoku) # You should not need to modify this
 # found, solution, gens = solve_sudoku(sudoku)
 # if(found):
