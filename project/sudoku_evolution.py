@@ -11,8 +11,8 @@ import numpy as np
 import random
 
 # Hyperparameters of the evolutionary algorithm
-MUTATION_RATE = 0.001  # Test value while crossover is not implemented, TODO change to suitable value later
-NUM_CHILDREN = 100
+MUTATION_RATE = 0.75  # Test value while crossover is not implemented, TODO change to suitable value later
+NUM_CHILDREN = 10
 MAX_GENERATIONS = 10000
 
 
@@ -74,9 +74,9 @@ def generate_children(sudoku, parents):
                     child[i][j] = val
                     vals.remove(val)
 
-        if random.random() <= CROSSOVER_RATE:
+        # if random.random() <= CROSSOVER_RATE:
             # TODO: Implement crossover between parents
-            place_holder = 1
+            # place_holder = 1
 
         if random.random() <= MUTATION_RATE:
             # Mutation: swap two digits in the sudoku puzzle
@@ -98,6 +98,8 @@ def evolve_solution(
 ):
     values = available_values(sudoku)
     open_fields = determine_open_fields(sudoku)
+    best_fitness = fitness_from_sudoku(sudoku)
+    best_fitness_per_generation = []
     # The solution is a permutation of the values list, where each element in values is filled in in the open_fields with the same index
 
     # Start with an initial set of parents, derived from the original sudoku configuration
@@ -107,7 +109,10 @@ def evolve_solution(
         previous_generation.append(vals)
 
     for generation in range(0, MAX_GENERATIONS):
-        print(generation)
+        best_in_gen = max([fitness_from_values(sudoku, open_fields, c) for c in previous_generation])
+        best_fitness_per_generation.append(best_in_gen)
+
+        print(f"{generation} : {best_fitness}")
         cum_fitness = np.sum(
             [fitness_from_values(sudoku, open_fields, c) for c in previous_generation]
         )
@@ -129,12 +134,16 @@ def evolve_solution(
                 child2 = mutate(child2)
             new_children.append(child1)
             new_children.append(child2)
+
+
         for c in new_children:
             if is_solution(sudoku, open_fields, c):
                 return generation, fill_in_sudoku(sudoku, open_fields, c)
         previous_generation = new_children
+        best_fitness_per_generation.append(best_fitness)
+
     print(f"No solution found after {MAX_GENERATIONS} generations")
-    return
+    return generation, best_fitness_per_generation
 
 def crossover(parents):
     """
