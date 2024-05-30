@@ -111,7 +111,7 @@ def evolve_solution(
         best_in_gen = max([fitness_from_values(sudoku, open_fields, c) for c in previous_generation])
         best_fitness_per_generation.append(best_in_gen)
 
-        print(f"{generation} : {best_fitness}")
+        print(f"{generation} : {best_in_gen}")
         cum_fitness = np.sum(
             [fitness_from_values(sudoku, open_fields, c) for c in previous_generation]
         )

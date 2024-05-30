@@ -130,10 +130,10 @@ def fitness_from_sudoku(sudoku):
     return score
 
 def fitness_from_values(sudoku, open_fields, values):
-    new_soduku = sudoku.copy()
+    new_sudoku = sudoku.copy()
     for index, val in zip(open_fields, values):
-        new_soduku[index] = val
-    return fitness_from_sudoku(new_soduku)
+        new_sudoku[index] = val
+    return fitness_from_sudoku(new_sudoku)
 
 def determine_open_fields(sudoku):
     """
