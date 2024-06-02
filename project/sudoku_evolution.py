@@ -1,6 +1,8 @@
 from sudoku import (
     valid_sudoku,
     fitness_from_sudoku,
+    local_fitness_from_sudoku,
+    local_fitness_from_values,
     fitness_from_values,
     determine_open_fields,
     available_values,
@@ -9,9 +11,11 @@ from sudoku import (
 )
 import numpy as np
 import random
+import heapq
 
 # Hyperparameters of the evolutionary algorithm
-MUTATION_RATE = 0.01  # Test value while crossover is not implemented, TODO change to suitable value later
+MUTATION_RATE = 0.01
+K_SELECT = 5 # TODO experiment with value
 NUM_CHILDREN = 10
 MAX_GENERATIONS = 10000
 
@@ -97,7 +101,7 @@ def evolve_solution(
 ):
     values = available_values(sudoku)
     open_fields = determine_open_fields(sudoku)
-    best_fitness = fitness_from_sudoku(sudoku)
+    best_fitness = local_fitness_from_sudoku(sudoku, open_fields)
     best_fitness_per_generation = []
     # The solution is a permutation of the values list, where each element in values is filled in in the open_fields with the same index
 
@@ -108,22 +112,27 @@ def evolve_solution(
         previous_generation.append(vals)
 
     for generation in range(0, MAX_GENERATIONS):
-        best_in_gen = max([fitness_from_values(sudoku, open_fields, c) for c in previous_generation])
+        best_in_gen = max([local_fitness_from_values(sudoku, open_fields, c) for c in previous_generation])
         best_fitness_per_generation.append(best_in_gen)
 
         print(f"{generation} : {best_in_gen}")
-        cum_fitness = np.sum(
-            [fitness_from_values(sudoku, open_fields, c) for c in previous_generation]
-        )
-        weights = [
-            fitness_from_values(sudoku, open_fields, c) / cum_fitness for c in previous_generation
-        ]
+        # cum_fitness = np.sum(
+        #     [local_fitness_from_values(sudoku, open_fields, c) for c in previous_generation]
+        # )
+        # weights = [
+        #     local_fitness_from_values(sudoku, open_fields, c) / cum_fitness for c in previous_generation
+        # ]
 
         new_children = []
         for _ in range(0, NR_CHILDREN // 2):
             # for each child, we generate two parents from the previous generation
+            # parents = random.choices(previous_generation, weights=weights, k=2)
 
-            parents = random.choices(previous_generation, weights=weights, k=2)
+            # Tournament selection
+            parent_pool = random.choices(previous_generation, k=K_SELECT)
+            parent_pool_fitness = [(p, local_fitness_from_values(sudoku, open_fields, p)) for p in parent_pool]
+            sorted_pool = sorted(parent_pool_fitness, key = lambda p: p[1])[::-1]
+            parents = [p[0] for p in sorted_pool][:2]
 
             child1, child2 = crossover(parents)
             # For both children, we mutate with a probability of MUTATION_RATE

@@ -2,7 +2,7 @@ from sudoku import parse_sudoku, pretty_print
 from sudoku_evolution import evolve_solution
 import matplotlib.pyplot as plt
 
-sudoku = parse_sudoku("./project/sudoku1_5v.txt")
+sudoku = parse_sudoku("./project/sudoku1_8v.txt")
 # constraints = initialise_constraints(sudoku) # You should not need to modify this
 # found, solution, gens = solve_sudoku(sudoku)
 # if(found):

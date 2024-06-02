@@ -129,11 +129,33 @@ def fitness_from_sudoku(sudoku):
             score += 1
     return score
 
+def local_fitness_from_sudoku(sudoku, open_fields):
+    """
+    For each field in a sudoku, we check if the value in it is valid.
+    For a value to be valid, see the explanation at is_valid_value.
+    The fitness is the count of valid values in a sudoku, and is thus
+    in the interval [0,f], where f is the amount of open fields and
+    indicates that a solution is found for the sudoku
+    """
+    score = 0
+    constraints = initialise_constraints(sudoku)
+    for index in open_fields:
+        if is_valid_value(sudoku, constraints, index):
+            score += 1
+    return score
+
 def fitness_from_values(sudoku, open_fields, values):
     new_sudoku = sudoku.copy()
     for index, val in zip(open_fields, values):
         new_sudoku[index] = val
     return fitness_from_sudoku(new_sudoku)
+
+def local_fitness_from_values(sudoku, open_fields, values):
+    new_sudoku = sudoku.copy()
+    for index, val in zip(open_fields, values):
+        new_sudoku[index] = val
+    return local_fitness_from_sudoku(new_sudoku, open_fields)
+
 
 def determine_open_fields(sudoku):
     """
