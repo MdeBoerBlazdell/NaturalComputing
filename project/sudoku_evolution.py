@@ -38,6 +38,7 @@ def evolve_solution(
         previous_generation.append(vals)
 
     for generation in range(0, MAX_GENERATIONS):
+        # For testing purposes and to generate result: store highest found fitness over all past generations
         best_in_gen = max([local_fitness_from_values(sudoku, open_fields, c) for c in previous_generation])
         best_fitness_per_generation.append(best_in_gen)
 
