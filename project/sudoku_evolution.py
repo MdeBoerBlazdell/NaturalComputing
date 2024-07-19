@@ -44,7 +44,9 @@ def evolve_solution(
         best_in_gen = max([local_fitness_from_values(sudoku, open_fields, c) for c in previous_generation])
         best_fitness_per_generation.append(best_in_gen)
 
-        print(f"{generation} : {best_in_gen}")
+        #print(f"{generation} : {best_in_gen}")
+
+        # Fitness-weighed selection
         #cum_fitness = np.sum(
         #    [local_fitness_from_values(sudoku, open_fields, c) for c in previous_generation]
         #    )
