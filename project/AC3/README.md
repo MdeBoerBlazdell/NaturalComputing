@@ -1,0 +1,2 @@
+Simple implementation of the AC3 algorithm developed in Java. Note that typically the algorithm uses a sorted queue, in our case we use an ordering based on 
+whether an Arc goes from a field A towards a field B that already has a value. If this is the case, we can reduce the domain of field A. If B does not have a value yet we can not modify field A, hence we have "wasted" an iteration of the algorithm. Obviously different orderings are possible, but not relevant for this project.

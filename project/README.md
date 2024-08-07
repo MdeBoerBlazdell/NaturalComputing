@@ -5,6 +5,7 @@ N indicates the number of missing values. All these Sudoku's were generated from
 - The sudoku_evolution.py file contains the main logic for the AE and the helper functions needed
 - sudoku.py contains all functionality related to working with the Sudoku
 - sudoku_solver.py is the main file, and is used to run the experiments
+- AC3 is a folder that contains a Java implementation of the AC3 algorithm which was used as a baseline
 
 # Running the experiments
 To run the experiments, you need to run sudoku_solver.py. You can decide which Sudoku to use by modifying line 5, simply give the path to your Sudoku
