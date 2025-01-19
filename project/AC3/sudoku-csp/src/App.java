@@ -1,6 +1,20 @@
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+
 public class App {
     public static void main(String[] args) throws Exception {
-        start("Sudoku2.txt");
+        var results = runAllTests();
+        System.out.println("Printing all test results (execution time in ms)");
+        for (String key : results.keySet()){
+            System.out.println(key + ": " + Arrays.toString(results.get(key)));
+        }
     }
 
     /**
@@ -8,16 +22,33 @@ public class App {
      * sudoku could be solved or not, and how many steps the algorithm performed
      * 
      * @param filePath
-     */
-    public static void start(String filePath) {
-        Game game1 = new Game(new Sudoku(filePath));
-        game1.showSudoku();
-
-        if (game1.solve() && game1.validSolution()) {
-            System.out.println("Solved!");
-        } else {
-            System.out.println("Could not solve this sudoku :(");
+          * @return 
+          */
+        public static Map<String, long[]> runAllTests() {
+        Map<String, long[]> results = new HashMap<>();
+    
+        File path = new File("sudokus/inputs");
+        File[] testCases = path.listFiles();
+        for (File f : testCases){
+            String filePath = "sudokus/inputs/" + f.getName();
+            var timings = runTest(filePath);
+            results.put(f.getName(), timings);
         }
-        game1.showSudoku();
+        
+        return results;
     }
+
+    public static long[] runTest(String filepath){
+        long[] timings = new long[5];
+        
+        for (int i = 0; i < 5; i++) {
+            Game game = new Game(new Sudoku(filepath));
+            long start = System.currentTimeMillis();
+            game.solve();
+            timings[i] = System.currentTimeMillis() - start;
+        }
+        return timings;
+    }
+
 }
+

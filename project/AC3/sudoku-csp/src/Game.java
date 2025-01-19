@@ -80,7 +80,6 @@ public class Game {
             }
         }
         while (!queue.isEmpty());
-        System.out.println(this.counter + " comparisons made");
         return true;
     }
     // This performs arc reduction when possible
