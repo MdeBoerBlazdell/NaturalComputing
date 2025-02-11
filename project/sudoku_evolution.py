@@ -13,19 +13,12 @@ import numpy as np
 import random
 import heapq
 
-# Hyperparameters of the evolutionary algorithm
-# TODO Experiment with full range of K_SELECT as well as MUTATION_RATE (or at least justify choices)
-MUTATION_RATE = 0.01
-K_SELECT = 7
-NUM_CHILDREN = 10
-MAX_GENERATIONS = 10000
-
 def evolve_solution(
     sudoku,
-    MAX_GENERATIONS=MAX_GENERATIONS,
-    MUTATION_RATE=MUTATION_RATE,
-    NR_CHILDREN=NUM_CHILDREN,
-    K_SELECT = K_SELECT
+    max_generations,
+    mutation_rate,
+    nr_children,
+    k_select
 ):
     values = available_values(sudoku)
     open_fields = determine_open_fields(sudoku)
@@ -35,11 +28,11 @@ def evolve_solution(
 
     # Start with an initial set of parents, derived from the original sudoku configuration
     previous_generation = []
-    for _ in range(0, NR_CHILDREN):
+    for _ in range(0, nr_children):
         vals = random.sample(values, len(values))
         previous_generation.append(vals)
 
-    for generation in range(0, MAX_GENERATIONS):
+    for generation in range(0, max_generations):
         # For testing purposes and to generate result: store highest found fitness over all past generations
         best_in_gen = max([local_fitness_from_values(sudoku, open_fields, c) for c in previous_generation])
         best_fitness_per_generation.append(best_in_gen)
@@ -47,29 +40,32 @@ def evolve_solution(
         #print(f"{generation} : {best_in_gen}")
 
         # Fitness-weighed selection
-        #cum_fitness = np.sum(
-        #    [local_fitness_from_values(sudoku, open_fields, c) for c in previous_generation]
-        #    )
-        #weights = [
-        #     local_fitness_from_values(sudoku, open_fields, c) / cum_fitness for c in previous_generation
-        #    ]
+        cum_fitness = 0
+        weights = []
+        
+        cum_fitness = np.sum(
+            [local_fitness_from_values(sudoku, open_fields, c) for c in previous_generation]
+            )
+        weights = [
+            local_fitness_from_values(sudoku, open_fields, c) / cum_fitness for c in previous_generation
+            ]
 
         new_children = []
-        for _ in range(0, NR_CHILDREN // 2):
+        for _ in range(0, nr_children // 2):
             # Fitness-weighed selection
-            # parents = np.random.choice(previous_generation, size = 2, replace = False, p = weights)
+            parents = random.choices(previous_generation, weights = weights, k = 2)
 
             # Tournament selection
-            parent_pool = random.sample(previous_generation, k=K_SELECT)
-            parent_pool_fitness = [(p, local_fitness_from_values(sudoku, open_fields, p)) for p in parent_pool]
-            sorted_pool = sorted(parent_pool_fitness, key = lambda p: p[1])[::-1]
-            parents = [p[0] for p in sorted_pool][:2]
+            #parent_pool = random.sample(previous_generation, k=k_select)
+            #parent_pool_fitness = [(p, local_fitness_from_values(sudoku, open_fields, p)) for p in parent_pool]
+            #sorted_pool = sorted(parent_pool_fitness, key = lambda p: p[1])[::-1]
+            #parents = [p[0] for p in sorted_pool][:2]
 
             child1, child2 = crossover(parents)
             # For both children, we mutate with a probability of MUTATION_RATE
-            if random.random() < MUTATION_RATE:
+            if random.random() < mutation_rate:
                 child1 = mutate(child1)
-            if random.random() < MUTATION_RATE:
+            if random.random() < mutation_rate:
                 child2 = mutate(child2)
             new_children.append(child1)
             new_children.append(child2)
@@ -81,7 +77,7 @@ def evolve_solution(
         previous_generation = new_children
         best_fitness_per_generation.append(best_fitness)
 
-    print(f"No solution found after {MAX_GENERATIONS} generations")
+    # print(f"No solution found after {max_generations} generations")
     return generation, best_fitness_per_generation
 
 def crossover(parents):
