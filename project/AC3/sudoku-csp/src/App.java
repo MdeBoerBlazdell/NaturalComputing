@@ -24,10 +24,10 @@ public class App {
         public static Map<String, long[]> runAllTests() {
         Map<String, long[]> results = new HashMap<>();
     
-        File path = new File("sudokus/inputs");
+        File path = new File("inputs/");
         File[] testCases = path.listFiles();
         for (File f : testCases){
-            String filePath = "sudokus/inputs/" + f.getName();
+            String filePath = "inputs/" + f.getName();
             var timings = runTest(filePath);
             results.put(f.getName(), timings);
         }
@@ -40,9 +40,9 @@ public class App {
         
         for (int i = 0; i < 5; i++) {
             Game game = new Game(new Sudoku(filepath));
-            long start = System.currentTimeMillis();
+            long start = System.nanoTime();
             game.solve();
-            timings[i] = System.currentTimeMillis() - start;
+            timings[i] = System.nanoTime() - start;
         }
         return timings;
     }
